@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light dark">
+<title>NYC Christmas '26</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..900&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+
+/* Layout: subway-station sign band on top, day "lines" as colored bullets, one column of stops, then the family vote board. */
+:root{
+  --bg:#f3f4f6; --surface:#ffffff; --ink:#14171c; --muted:#5b6270; --line:#dde0e6;
+  --sign:#121417; --sign-ink:#ffffff;
+  --accent:#0039a6; --accent-ink:#ffffff;
+  --mon:#ee352e; --tue:#00933c; --wed:#ff6319; --thu:#b933ad;
+  --yes:#00933c; --no:#8a8f98; --warn:#a15c00; --warn-bg:#fff4e0;
+  --display:"Archivo","Arial Narrow",Arial,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0e1013; --surface:#171a1f; --ink:#eceef2; --muted:#9aa1ad; --line:#2a2e36;
+  --sign:#000000; --sign-ink:#ffffff; --accent:#5b8cff; --accent-ink:#0b0e14;
+  --yes:#2ecc71; --no:#7b818c; --warn:#ffb347; --warn-bg:#2a2112; color-scheme:dark}}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;margin:0}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
+a{color:var(--accent)}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* sign band */
+.sign{background:var(--sign);color:var(--sign-ink);border-top:6px solid var(--sign);box-shadow:inset 0 2px 0 #fff3}
+.sign .wrap{padding-block:22px 20px;display:grid;gap:14px}
+.sign h1{font-size:clamp(2rem,8vw,3.2rem);font-weight:800;font-stretch:90%;letter-spacing:-.01em}
+.sign .sub{font-size:.95rem;opacity:.85}
+.bullets{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bullet{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;color:#fff;font-size:.95rem;flex:none}
+.b-mon{background:var(--mon)}.b-tue{background:var(--tue)}.b-wed{background:var(--wed)}.b-thu{background:var(--thu)}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.88rem}
+.meta b{font-family:var(--display);letter-spacing:.06em;text-transform:uppercase;font-size:.72rem;opacity:.7;display:block}
+.countdown{font-family:var(--display);font-weight:800;font-size:1.4rem;font-variant-numeric:tabular-nums}
+
+main .wrap{padding-block:20px 48px;display:grid;gap:36px}
+section{display:grid;gap:14px}
+.eyebrow{font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;font-size:.72rem;font-weight:700;color:var(--muted)}
+h2{font-size:1.6rem;font-weight:800;font-stretch:95%}
+.lede{color:var(--muted);margin:0;max-width:62ch}
+
+/* status */
+.status{font-size:.9rem;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:10px 12px;display:flex;gap:10px;align-items:flex-start}
+.status.warn{background:var(--warn-bg);border-color:transparent;color:var(--ink)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--no);margin-top:6px;flex:none}
+.status.live .dot{background:var(--yes)}
+.people{display:flex;gap:6px;flex-wrap:wrap}
+.av{width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:.75rem;font-weight:700;font-family:var(--display)}
+
+/* day tabs */
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.tab{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:var(--r);padding:8px 4px;display:grid;justify-items:center;gap:4px;font-size:.78rem}
+.tab .bullet{width:30px;height:30px;font-size:.85rem}
+.tab[aria-selected="true"]{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.dayhead{display:grid;gap:4px}
+.dayhead h3{font-size:1.35rem;font-weight:800}
+.note{font-size:.9rem;background:var(--warn-bg);border-radius:var(--r);padding:10px 12px}
+
+/* timeline */
+.stops{list-style:none;margin:0;padding:0;position:relative}
+.stops::before{content:"";position:absolute;left:62px;top:10px;bottom:10px;width:6px;border-radius:3px;background:var(--daycol)}
+.stop{display:grid;grid-template-columns:50px 26px 1fr;gap:0 10px;padding-block:8px;align-items:start}
+.time{font-family:var(--display);font-weight:700;font-size:.82rem;text-align:right;padding-top:3px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.node{width:18px;height:18px;border-radius:50%;background:var(--surface);border:4px solid var(--daycol);margin:3px 0 0 4px;position:relative;z-index:1}
+.stop.transit .node{border-radius:4px;width:16px;height:16px;margin-left:5px}
+.sbody{min-width:0;display:grid;gap:3px}
+.sbody h4{margin:0;font-size:1.02rem;font-family:var(--body);font-weight:700}
+.sbody p{margin:0;color:var(--muted);font-size:.92rem}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.tag{font-size:.72rem;font-family:var(--display);font-weight:700;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:1px 8px;color:var(--muted)}
+.tag.book{border-color:var(--warn);color:var(--warn)}
+.maplink{font-size:.85rem}
+.picks{border:1px dashed var(--daycol);border-radius:var(--r);padding:10px 12px;display:grid;gap:6px;background:var(--surface)}
+.picks h4{margin:0;font-family:var(--display);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:var(--daycol);color:#fff;border-radius:999px;padding:3px 10px;font-size:.85rem;font-weight:700}
+
+/* vote board */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.seg{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;color:var(--ink);padding:6px 12px;font-size:.85rem}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.ideas{display:grid;gap:10px}
+.idea{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:grid;grid-template-columns:auto 1fr;gap:10px 12px;align-items:start}
+.idea .bullet{width:28px;height:28px;font-size:.78rem}
+.idea .bullet.b-any{background:var(--muted)}
+.ibody{min-width:0;display:grid;gap:4px}
+.ibody h4{margin:0;font-size:1rem}
+.ibody p{margin:0;color:var(--muted);font-size:.9rem}
+.vrow{grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.vbtn{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px;font-weight:700;font-size:.88rem;display:inline-flex;gap:6px;align-items:center;min-height:38px}
+.vbtn.in[aria-pressed="true"]{background:var(--yes);border-color:var(--yes);color:#fff}
+.vbtn.skip[aria-pressed="true"]{background:var(--no);border-color:var(--no);color:#fff}
+.vbtn:disabled{opacity:.5;cursor:not-allowed}
+.tally{margin-left:auto;font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums;display:flex;gap:8px;align-items:center}
+.bar{width:70px;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--yes)}
+.who{font-size:.78rem;color:var(--muted)}
+.del{border:0;background:none;color:var(--muted);font-size:.8rem;text-decoration:underline;padding:0}
+
+form.add{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:10px}
+form.add label{font-size:.82rem;font-weight:700;display:grid;gap:4px}
+form.add input,form.add select,form.add textarea{font:inherit;padding:9px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.primary{background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:10px 18px;font-weight:700;justify-self:start}
+.primary:disabled{opacity:.5}
+.formmsg{font-size:.85rem;color:var(--muted);min-height:1.2em}
+
+/* checklist */
+.checks{list-style:none;padding:0;margin:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+.checks li{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:12px;border-top:1px solid var(--line);align-items:start}
+.checks li:first-child{border-top:0}
+.checks input{width:22px;height:22px;margin:2px 0 0;accent-color:var(--yes)}
+.checks label{display:grid;gap:2px;cursor:pointer}
+.checks small{color:var(--muted)}
+.checks .done label span{text-decoration:line-through;color:var(--muted)}
+
+/* know before */
+.tips{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.tip{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:6px;align-content:start}
+.tip h3{font-size:1.05rem;font-weight:800}
+.tip p,.tip ul{margin:0;font-size:.92rem;color:var(--muted)}
+.tip ul{padding-left:18px}
+footer{font-size:.8rem;color:var(--muted)}
+@media (max-width:420px){.row2{grid-template-columns:1fr}.stops::before{left:58px}.stop{grid-template-columns:46px 26px 1fr}}
+@media (prefers-reduced-motion:no-preference){.vbtn,.tab{transition:background .15s,border-color .15s}}
+
+[hidden]{display:none!important}
+
+.trip-meta{gap:6px 18px;font-size:.9rem;padding:12px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.trip-meta b{opacity:1;color:var(--muted)}
+#app{display:grid;gap:36px}
+#app[hidden]{display:none!important}
+#lockForm:has(#lock[hidden]){display:none}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* join card */
+.join{background:var(--surface);border:2px solid var(--ink);border-radius:var(--r);padding:16px;display:grid;gap:12px}
+.join h3{font-size:1.2rem}
+.join p{margin:0;color:var(--muted);font-size:.92rem}
+.join input{font:inherit;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.join label{font-size:.82rem;font-weight:700;display:grid;gap:4px}
+.me{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:.92rem}
+.linkbtn{border:0;background:none;color:var(--accent);text-decoration:underline;padding:0;font-size:.85rem}
+/* brain dump */
+.dumpform{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:10px}
+.dumpform textarea{font:inherit;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%;resize:vertical;min-height:64px}
+.kinds{display:flex;gap:6px;flex-wrap:wrap}
+.kind{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 12px;font-size:.85rem;font-weight:700}
+.kind[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.dumprow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.dumps{display:grid;gap:8px}
+.dump{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center}
+.dump p{margin:0;font-size:1rem;min-width:0;overflow-wrap:anywhere}
+.dump .by{grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.metoo{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 12px;font-weight:700;font-size:.85rem;white-space:nowrap;min-height:38px}
+.metoo[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.metoo:disabled{opacity:.5}
+.k-do{--kc:var(--accent)}.k-see{--kc:var(--tue)}.k-eat{--kc:var(--wed)}.k-shop{--kc:var(--thu)}
+.ktag{font-size:.7rem;font-family:var(--display);font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--kc);border-radius:4px;padding:1px 6px}
+.empty{border:1px dashed var(--line);border-radius:var(--r);padding:16px;color:var(--muted);font-size:.92rem;text-align:center}
+.crawl{font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;background:var(--wed);color:#fff;border-radius:4px;padding:1px 6px}
+</style>
+</head>
+<body>
+<header class="sign">
+  <div class="wrap">
+    <div class="bullets" aria-hidden="true">
+      <span class="bullet b-mon">M</span><span class="bullet b-tue">T</span><span class="bullet b-wed">W</span><span class="bullet b-thu">Th</span>
+    </div>
+    <h1>NYC Christmas '26</h1>
+    <div class="sub">Private family trip board.</div>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+  <form class="join" id="lockForm" hidden><div id="lock" style="display:contents">
+    <h3>Enter the family code</h3>
+    <p>This board is just for our group. The code is in the text you were sent.</p>
+    <label for="lCode">Family code<input id="lCode" maxlength="40" autocapitalize="off" autocomplete="off" spellcheck="false"></label>
+    <div class="dumprow"><button class="primary" type="submit" id="lBtn">Open the trip</button><span class="formmsg" id="lMsg" aria-live="polite"></span></div>
+  </div></form>
+  <div id="app" hidden>
+  <div class="meta trip-meta">
+    <div><b>Dates</b>Mon Dec 14 – Thu Dec 17</div>
+    <div><b>Base</b>Hampton Inn Times Square · 150 W 48th St</div>
+    <div><b>Leaving in</b><span class="countdown" id="countdown">—</span></div>
+  </div>
+  <div id="joinBox"></div>
+  <div class="status" id="status"><span class="dot"></span><div id="statusText">Loading the family board…</div></div>
+
+  <section aria-labelledby="dumpH">
+    <div class="eyebrow">Step 1 · Everyone</div>
+    <h2 id="dumpH">Brain dump</h2>
+    <p class="lede">What do <b>you</b> most want to do, see, eat or buy in NYC? No idea is too small. One thing per entry, add as many as you like. Tap <b>Me too</b> on other people's.</p>
+    <form class="dumpform" id="dumpForm">
+      <label for="dText" class="eyebrow" style="color:var(--ink)">My must-do</label>
+      <textarea id="dText" maxlength="200" placeholder="e.g. Eat a real NY bagel, see the tree at night, buy a fake Rolex for Uncle Jim"></textarea>
+      <div class="kinds" id="kinds" role="group" aria-label="Type">
+        <button type="button" class="kind" data-k="do" aria-pressed="true">Do</button>
+        <button type="button" class="kind" data-k="see" aria-pressed="false">See</button>
+        <button type="button" class="kind" data-k="eat" aria-pressed="false">Eat</button>
+        <button type="button" class="kind" data-k="shop" aria-pressed="false">Shop</button>
+      </div>
+      <div class="dumprow"><button class="primary" type="submit" id="dBtn">Add it</button><span class="formmsg" id="dMsg" aria-live="polite"></span></div>
+    </form>
+    <div class="toolbar">
+      <div class="seg" id="dumpSeg" role="group" aria-label="Show">
+        <button type="button" data-f="top" aria-pressed="true">Most wanted</button>
+        <button type="button" data-f="new" aria-pressed="false">Newest</button>
+        <button type="button" data-f="mine" aria-pressed="false">Mine</button>
+      </div>
+    </div>
+    <div class="dumps" id="dumps"></div>
+  </section>
+
+  <section aria-labelledby="planH">
+    <div class="eyebrow">Step 2 · The plan</div>
+    <h2 id="planH">Day by day</h2>
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <div id="day" role="tabpanel"></div>
+  </section>
+
+  <section aria-labelledby="voteH">
+    <div class="eyebrow">Step 3 · Family vote</div>
+    <h2 id="voteH">Extras to add</h2>
+    <p class="lede">Tap <b>I'm in</b> or <b>Skip</b>. Anything most of the group wants shows up on that day's plan automatically.</p>
+    <div class="toolbar">
+      <div class="seg" id="sortSeg" role="group" aria-label="Sort">
+        <button type="button" data-sort="top" aria-pressed="true">Most wanted</button>
+        <button type="button" data-sort="day" aria-pressed="false">By day</button>
+        <button type="button" data-sort="mine" aria-pressed="false">Not voted yet</button>
+      </div>
+    </div>
+    <div class="ideas" id="ideas"></div>
+
+    <form class="add" id="addForm">
+      <h3 style="font-size:1.1rem">Suggest an extra for the vote</h3>
+      <label for="fTitle">What is it?<input id="fTitle" maxlength="80" required placeholder="e.g. Hot chocolate at Jacques Torres"></label>
+      <div class="row2">
+        <label for="fDay">Best day<select id="fDay">
+          <option value="any">Any day</option><option value="mon">Mon · Midtown</option><option value="tue">Tue · Uptown</option><option value="wed">Wed · Downtown</option><option value="thu">Thu · Last morning</option>
+        </select></label>
+        <label for="fCost">Cost<select id="fCost"><option>Free</option><option>$</option><option>$$</option><option>$$$</option></select></label>
+      </div>
+      <label for="fNote">Why it's worth it (optional)<textarea id="fNote" rows="2" maxlength="240"></textarea></label>
+      <button class="primary" id="fBtn" type="submit">Add to the vote</button>
+      <div class="formmsg" id="fMsg" aria-live="polite"></div>
+    </form>
+  </section>
+
+  <section aria-labelledby="bookH">
+    <div class="eyebrow">Shared checklist</div>
+    <h2 id="bookH">Book before we go</h2>
+    <p class="lede">Check it off when it's booked so nobody buys twice.</p>
+    <ul class="checks" id="checks"></ul>
+  </section>
+
+  <section aria-labelledby="tipsH">
+    <div class="eyebrow">Know before you go</div>
+    <h2 id="tipsH">Field notes</h2>
+    <div class="tips">
+      <div class="tip"><h3>Chinatown grazing</h3>
+        <ul><li>Bring cash in small bills. Many bakeries and dumpling counters are cash only.</li><li>Order one of each and share. Most stops are a few dollars, so the group can try far more.</li><li>Pace it: the crawl runs all afternoon with walking and shopping between bites.</li></ul></div>
+      <div class="tip"><h3>Canal Street knockoffs</h3>
+        <p>The "fake bag" strip is Canal Street between roughly Broadway and Mott St, right where Chinatown starts.</p>
+        <ul><li>Sellers whisper "bags, watches" and show a photo catalog, then walk you to a back room or van. Stay together as a group and don't follow anyone alone.</li><li>Selling counterfeits is illegal and police do sweeps, so stalls come and go.</li><li>Cash, small bills, haggle hard. Quality is hit or miss.</li></ul></div>
+      <div class="tip"><h3>Weather &amp; light</h3>
+        <p>Mid-December runs about 30–42°F, often windy downtown. It's dark by about 4:30 PM, which is why lights and the tree are planned for late afternoon. Waterproof shoes beat cute ones; you'll walk 6–10 miles a day.</p></div>
+      <div class="tip"><h3>Subway</h3>
+        <p>Tap a phone or contactless card at the turnstile (OMNY); no MetroCard needed. Fares cap after enough rides in a week. The hotel is a short walk from 47–50 Sts–Rockefeller Ctr (B D F M), 49 St (N R W) and 50 St (1, C E).</p></div>
+      <div class="tip"><h3>Things that close</h3>
+        <ul><li>Most Broadway shows are dark on Mondays, so the show is on Tuesday.</li><li>The 9/11 Museum normally closes Tuesdays, so downtown is Wednesday. The outdoor Memorial pools are free and open daily.</li><li>The Rockefeller tree is lit from Dec 2 and stays up into January.</li></ul></div>
+    </div>
+  </section>
+
+  </div>
+  <footer>Hours and schedules checked in early November 2026. Confirm anything paid on the official site before booking. Restaurant picks can close or change hours; check before you go.</footer>
+</div>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
