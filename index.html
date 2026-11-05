@@ -5,9 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#121417">
 <title>NYC Christmas '26</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..900&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
 
 /* Layout: subway-station sign band on top, day "lines" as colored bullets, one column of stops, then the family vote board. */
@@ -140,38 +142,123 @@ footer{font-size:.8rem;color:var(--muted)}
 
 [hidden]{display:none!important}
 
+html{scroll-padding-top:64px}
 .trip-meta{gap:6px 18px;font-size:.9rem;padding:12px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
 .trip-meta b{opacity:1;color:var(--muted)}
-#app{display:grid;gap:36px}
+#app{display:grid;gap:40px}
 #app[hidden]{display:none!important}
-#lockForm:has(#lock[hidden]){display:none}
-:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-/* join card */
+section{scroll-margin-top:64px}
+.sechead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.count{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+/* section nav */
+#secnav{position:sticky;top:0;z-index:1000;background:var(--sign);padding-top:env(safe-area-inset-top,0px)}
+#secnav .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-block:8px}
+#secnav .wrap::-webkit-scrollbar{display:none}
+#secnav button{flex:none;border:0;background:transparent;color:#ffffffb3;font-family:var(--display);font-weight:700;font-size:.85rem;letter-spacing:.02em;padding:7px 12px;border-radius:999px}
+#secnav button[aria-current="true"]{background:#ffffff;color:#121417}
+/* join + me */
 .join{background:var(--surface);border:2px solid var(--ink);border-radius:var(--r);padding:16px;display:grid;gap:12px}
 .join h3{font-size:1.2rem}
 .join p{margin:0;color:var(--muted);font-size:.92rem}
-.join input{font:inherit;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.join input{font:inherit;padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%;font-size:1.05rem}
 .join label{font-size:.82rem;font-weight:700;display:grid;gap:4px}
-.me{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:.92rem}
+.mebar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:.92rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px}
+.mename{flex:1 1 auto;min-width:0}
+.orgtag{margin-left:8px;font-size:.68rem;font-family:var(--display);font-weight:800;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--accent);color:var(--accent);border-radius:4px;padding:1px 6px}
+.ghost{border:1.5px solid var(--accent);background:transparent;color:var(--accent);border-radius:999px;padding:6px 14px;font-weight:700;font-size:.85rem}
 .linkbtn{border:0;background:none;color:var(--accent);text-decoration:underline;padding:0;font-size:.85rem}
+/* tracker + suggestions */
+.tracker{display:flex;gap:6px;flex-wrap:wrap}
+.who-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:3px 10px 3px 3px;font-size:.82rem}
+.who-chip b{font-variant-numeric:tabular-nums;color:var(--ink)}
+.who-chip.has{color:var(--ink);border-color:var(--ink)}
+.who-chip.wait{padding:5px 12px;border-style:dashed;cursor:pointer}
+.av.sm{width:22px;height:22px;font-size:.62rem}
+.suggest{display:grid;gap:8px}
+.sugrow{display:flex;gap:6px;flex-wrap:wrap}
+.sug{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;font-size:.88rem;min-height:38px}
+.sug .plus{width:18px;height:18px;border-radius:50%;background:var(--kc);color:#fff;display:grid;place-items:center;font-weight:800;font-size:.8rem;line-height:1}
+.sug:disabled{opacity:.5}
+.sug.more{border-style:dashed;color:var(--muted)}
 /* brain dump */
 .dumpform{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:10px}
-.dumpform textarea{font:inherit;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%;resize:vertical;min-height:64px}
+.dumpform textarea{font:inherit;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%;resize:vertical;min-height:64px;font-size:1rem}
 .kinds{display:flex;gap:6px;flex-wrap:wrap}
-.kind{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 12px;font-size:.85rem;font-weight:700}
+.kind{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 14px;font-size:.88rem;font-weight:700;min-height:36px}
 .kind[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .dumprow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .dumps{display:grid;gap:8px}
 .dump{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center}
+.dump.dim{opacity:.6}
 .dump p{margin:0;font-size:1rem;min-width:0;overflow-wrap:anywhere}
 .dump .by{grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.st{font-size:.68rem;font-family:var(--display);font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;padding:1px 6px;border:1px solid}
+.st-planned{color:var(--yes);border-color:var(--yes)}.st-maybe{color:var(--warn);border-color:var(--warn)}.st-nofit{color:var(--no);border-color:var(--no)}
+.orgseg{grid-column:1/-1;display:flex;gap:4px;flex-wrap:wrap;border-top:1px dashed var(--line);padding-top:8px}
+.orgseg button{border:1px solid var(--line);background:var(--bg);color:var(--muted);border-radius:6px;padding:3px 10px;font-size:.78rem}
+.orgseg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .metoo{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 12px;font-weight:700;font-size:.85rem;white-space:nowrap;min-height:38px}
 .metoo[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.metoo:disabled{opacity:.5}
 .k-do{--kc:var(--accent)}.k-see{--kc:var(--tue)}.k-eat{--kc:var(--wed)}.k-shop{--kc:var(--thu)}
 .ktag{font-size:.7rem;font-family:var(--display);font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--kc);border-radius:4px;padding:1px 6px}
 .empty{border:1px dashed var(--line);border-radius:var(--r);padding:16px;color:var(--muted);font-size:.92rem;text-align:center}
-.crawl{font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;background:var(--wed);color:#fff;border-radius:4px;padding:1px 6px}
+.crawl{font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;background:var(--wed);color:#fff;border-radius:4px;padding:1px 6px;vertical-align:2px}
+/* plan + map */
+.tab{position:relative}
+.tab .tabname{font-family:var(--display);font-weight:800;font-size:.82rem}
+.tab .tabdate{font-size:.72rem;color:var(--muted)}
+.tab[aria-selected="true"]{border-color:var(--daycol);box-shadow:0 0 0 1.5px var(--daycol)}
+.planwrap{display:grid;gap:14px}
+.mapbox{position:sticky;top:52px;z-index:5;isolation:isolate;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--surface);box-shadow:0 6px 18px -12px #0006}
+#map{height:min(30vh,300px);min-height:200px;width:100%;background:var(--line)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:.74rem;color:var(--muted);padding:6px 10px;border-top:1px solid var(--line);background:var(--surface)}
+.legend i{display:inline-block;width:22px;height:0;border-top:3px dashed var(--daycol);vertical-align:middle;margin-right:4px}
+.legend i.t{border-top:3px dotted var(--daycol);opacity:.6}
+.legend .lp{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;font-size:.6rem;font-weight:800;vertical-align:middle;margin-right:4px;color:#fff;background:var(--daycol)}
+.legend .lp.h{border-radius:4px;background:var(--ink);color:var(--bg)}
+.legend .lp.s{background:#f5b400;color:#121417}
+.legend .lp.l{background:var(--surface);color:var(--daycol);border:2px solid var(--daycol)}
+.pin{width:28px;height:28px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font:800 13px/1 "Archivo",Arial,sans-serif;border:2.5px solid #fff;box-shadow:0 2px 6px #0005;transition:transform .15s}
+.pin-h{border-radius:7px;background:#121417;width:30px;height:30px}
+.pin-t{background:#fff;color:var(--c);border-color:var(--c)}
+.pin-pick{width:26px;height:26px;background:#f5b400;color:#121417;font-size:14px}
+.pin-alt{width:24px;height:24px;background:#fff;color:var(--c);border:2.5px solid var(--c);font-size:11px}
+.pin.on{transform:scale(1.35);box-shadow:0 0 0 5px color-mix(in srgb,var(--c) 30%,transparent),0 2px 8px #0006}
+.route-walk{animation:march 1.4s linear infinite}
+@keyframes march{to{stroke-dashoffset:-24}}
+@media (prefers-reduced-motion:reduce){.route-walk{animation:none}.pin{transition:none}}
+.leaflet-container{font-family:var(--body)}
+.leaflet-tooltip{font-size:.8rem;font-weight:700;border-radius:6px}
+.dayhead .dayacts{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:4px}
+.stops::before{left:70px}
+.stop{border-radius:8px;cursor:default}
+.stop[role="button"]{cursor:pointer}
+.stop[role="button"]:hover{background:color-mix(in srgb,var(--daycol) 6%,transparent)}
+.stop.on{background:color-mix(in srgb,var(--daycol) 12%,transparent)}
+.node{width:24px;height:24px;margin:0;justify-self:center;border-width:3px;display:grid;place-items:center;font:800 .68rem/1 var(--display);color:var(--ink)}
+.node.h{border-radius:6px}
+.stop.on .node{background:var(--daycol);color:#fff}
+.stop.transit .node{width:20px;height:20px;border-radius:5px;margin-top:2px}
+.alts{margin-top:6px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.alts summary{cursor:pointer;list-style:none;display:flex;gap:8px;align-items:center;padding:7px 10px;font-size:.85rem;color:var(--ink)}
+.alts summary::-webkit-details-marker{display:none}
+.alts summary::after{content:"+";margin-left:auto;font-weight:800;color:var(--muted)}
+.alts[open] summary::after{content:"–"}
+.alttag{white-space:nowrap;flex:none;font-size:.66rem;font-family:var(--display);font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:var(--ink);color:var(--bg);border-radius:4px;padding:1px 6px}
+.alts ul{list-style:none;margin:0;padding:0 10px 10px;display:grid;gap:10px}
+.alts li{display:grid;gap:2px;border-top:1px dashed var(--line);padding-top:8px}
+.althead{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.alts p{margin:0;font-size:.88rem;color:var(--muted)}
+@media (min-width:900px){
+  .wrap{max-width:1120px}
+  .planwrap{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:start}
+  .mapbox{order:2;top:64px}
+  #map{height:calc(100vh - 150px);max-height:680px}
+  #day{order:1}
+}
+@media (max-width:420px){.stops::before{left:66px}}
+/* toast */
+#toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2000;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:.9rem;font-weight:700;box-shadow:0 6px 20px #0005;max-width:calc(100vw - 32px)}
 </style>
 </head>
 <body>
@@ -184,16 +271,24 @@ footer{font-size:.8rem;color:var(--muted)}
     <div class="sub">Private family trip board.</div>
   </div>
 </header>
+<nav id="secnav" aria-label="Sections" hidden><div class="wrap">
+  <button type="button" data-to="dump" aria-current="true">Brain dump</button>
+  <button type="button" data-to="plan" aria-current="false">Plan &amp; map</button>
+  <button type="button" data-to="vote" aria-current="false">Vote</button>
+  <button type="button" data-to="book" aria-current="false">Book</button>
+  <button type="button" data-to="tips" aria-current="false">Tips</button>
+</div></nav>
 
 <main>
 <div class="wrap">
 
-  <form class="join" id="lockForm" hidden><div id="lock" style="display:contents">
+  <form class="join" id="lockForm" hidden>
     <h3>Enter the family code</h3>
     <p>This board is just for our group. The code is in the text you were sent.</p>
     <label for="lCode">Family code<input id="lCode" maxlength="40" autocapitalize="off" autocomplete="off" spellcheck="false"></label>
     <div class="dumprow"><button class="primary" type="submit" id="lBtn">Open the trip</button><span class="formmsg" id="lMsg" aria-live="polite"></span></div>
-  </div></form>
+  </form>
+
   <div id="app" hidden>
   <div class="meta trip-meta">
     <div><b>Dates</b>Mon Dec 14 – Thu Dec 17</div>
@@ -201,15 +296,17 @@ footer{font-size:.8rem;color:var(--muted)}
     <div><b>Leaving in</b><span class="countdown" id="countdown">—</span></div>
   </div>
   <div id="joinBox"></div>
-  <div class="status" id="status"><span class="dot"></span><div id="statusText">Loading the family board…</div></div>
+  <div class="status" id="status" hidden><span class="dot"></span><div id="statusText"></div></div>
 
-  <section aria-labelledby="dumpH">
+  <section id="dump" aria-labelledby="dumpH">
     <div class="eyebrow">Step 1 · Everyone</div>
-    <h2 id="dumpH">Brain dump</h2>
-    <p class="lede">What do <b>you</b> most want to do, see, eat or buy in NYC? No idea is too small. One thing per entry, add as many as you like. Tap <b>Me too</b> on other people's.</p>
+    <div class="sechead"><h2 id="dumpH">Brain dump</h2><span class="count" id="dumpCount"></span></div>
+    <p class="lede">What do <b>you</b> most want to do, see, eat or buy in NYC? Nothing is too small. Add as many as you like, and tap <b>Me too</b> on everyone else's. Colton will fit the favorites into the plan.</p>
+    <div class="tracker" id="tracker" aria-label="Who has added ideas"></div>
+    <div class="suggest" id="suggest"></div>
     <form class="dumpform" id="dumpForm">
-      <label for="dText" class="eyebrow" style="color:var(--ink)">My must-do</label>
-      <textarea id="dText" maxlength="200" placeholder="e.g. Eat a real NY bagel, see the tree at night, buy a fake Rolex for Uncle Jim"></textarea>
+      <label for="dText" class="eyebrow" style="color:var(--ink)">Or type your own</label>
+      <textarea id="dText" maxlength="200" placeholder="e.g. See the windows at Saks, find a fake Rolex for Dad, eat a giant pretzel"></textarea>
       <div class="kinds" id="kinds" role="group" aria-label="Type">
         <button type="button" class="kind" data-k="do" aria-pressed="true">Do</button>
         <button type="button" class="kind" data-k="see" aria-pressed="false">See</button>
@@ -228,17 +325,24 @@ footer{font-size:.8rem;color:var(--muted)}
     <div class="dumps" id="dumps"></div>
   </section>
 
-  <section aria-labelledby="planH">
+  <section id="plan" aria-labelledby="planH">
     <div class="eyebrow">Step 2 · The plan</div>
     <h2 id="planH">Day by day</h2>
+    <p class="lede">A first draft. It will get reshuffled around the brain dump and votes. Tap any stop to find it on the map.</p>
     <div class="tabs" role="tablist" id="tabs"></div>
-    <div id="day" role="tabpanel"></div>
+    <div class="planwrap">
+      <div class="mapbox">
+        <div id="map" role="region" aria-label="Map of the day's route"></div>
+        <div class="legend"><span><i></i>Walk</span><span><i class="t"></i>Subway or taxi</span><span><span class="lp">1</span>Stop</span><span><span class="lp h">H</span>Hotel</span><span><span class="lp s">★</span>Family pick</span><span><span class="lp l">L</span>Local pick</span></div>
+      </div>
+      <div id="day" role="tabpanel" style="display:grid;gap:12px;min-width:0"></div>
+    </div>
   </section>
 
-  <section aria-labelledby="voteH">
+  <section id="vote" aria-labelledby="voteH">
     <div class="eyebrow">Step 3 · Family vote</div>
     <h2 id="voteH">Extras to add</h2>
-    <p class="lede">Tap <b>I'm in</b> or <b>Skip</b>. Anything most of the group wants shows up on that day's plan automatically.</p>
+    <p class="lede">Tap <b>I'm in</b> or <b>Skip</b>. Anything most of the group wants shows up on that day's plan and map. Open <b>Local picks</b> for cheaper or less touristy swaps.</p>
     <div class="toolbar">
       <div class="seg" id="sortSeg" role="group" aria-label="Sort">
         <button type="button" data-sort="top" aria-pressed="true">Most wanted</button>
@@ -247,10 +351,9 @@ footer{font-size:.8rem;color:var(--muted)}
       </div>
     </div>
     <div class="ideas" id="ideas"></div>
-
     <form class="add" id="addForm">
       <h3 style="font-size:1.1rem">Suggest an extra for the vote</h3>
-      <label for="fTitle">What is it?<input id="fTitle" maxlength="80" required placeholder="e.g. Hot chocolate at Jacques Torres"></label>
+      <label for="fTitle">What is it?<input id="fTitle" maxlength="80" required placeholder="e.g. Hot chocolate somewhere cozy"></label>
       <div class="row2">
         <label for="fDay">Best day<select id="fDay">
           <option value="any">Any day</option><option value="mon">Mon · Midtown</option><option value="tue">Tue · Uptown</option><option value="wed">Wed · Downtown</option><option value="thu">Thu · Last morning</option>
@@ -263,22 +366,24 @@ footer{font-size:.8rem;color:var(--muted)}
     </form>
   </section>
 
-  <section aria-labelledby="bookH">
+  <section id="book" aria-labelledby="bookH">
     <div class="eyebrow">Shared checklist</div>
-    <h2 id="bookH">Book before we go</h2>
+    <div class="sechead"><h2 id="bookH">Book before we go</h2><span class="count" id="bookCount"></span></div>
     <p class="lede">Check it off when it's booked so nobody buys twice.</p>
     <ul class="checks" id="checks"></ul>
   </section>
 
-  <section aria-labelledby="tipsH">
+  <section id="tips" aria-labelledby="tipsH">
     <div class="eyebrow">Know before you go</div>
     <h2 id="tipsH">Field notes</h2>
     <div class="tips">
+      <div class="tip"><h3>Saving money</h3>
+        <ul><li>Sunset views: Gantry Plaza in Queens is free and the Roosevelt Island Tram costs a subway fare. Top of the Rock runs about $45+ a person.</li><li>Split the big stuff. One Katz's pastrami sandwich feeds two.</li><li>Chinatown bites are mostly a few dollars each, and the Bryant Park rink is free to skate.</li></ul></div>
       <div class="tip"><h3>Chinatown grazing</h3>
-        <ul><li>Bring cash in small bills. Many bakeries and dumpling counters are cash only.</li><li>Order one of each and share. Most stops are a few dollars, so the group can try far more.</li><li>Pace it: the crawl runs all afternoon with walking and shopping between bites.</li></ul></div>
+        <ul><li>Bring cash in small bills. Many bakeries and dumpling counters are cash only.</li><li>Order one of each and share, so the group can try far more.</li><li>The route is a loop on the map: south, Canal St, north, Little Italy, then back south.</li></ul></div>
       <div class="tip"><h3>Canal Street knockoffs</h3>
         <p>The "fake bag" strip is Canal Street between roughly Broadway and Mott St, right where Chinatown starts.</p>
-        <ul><li>Sellers whisper "bags, watches" and show a photo catalog, then walk you to a back room or van. Stay together as a group and don't follow anyone alone.</li><li>Selling counterfeits is illegal and police do sweeps, so stalls come and go.</li><li>Cash, small bills, haggle hard. Quality is hit or miss.</li></ul></div>
+        <ul><li>Sellers whisper "bags, watches" and show a photo catalog, then walk you to a back room or van. Stay together and don't follow anyone alone.</li><li>Selling counterfeits is illegal and police do sweeps, so stalls come and go.</li><li>Cash, small bills, haggle hard. Quality is hit or miss.</li></ul></div>
       <div class="tip"><h3>Weather &amp; light</h3>
         <p>Mid-December runs about 30–42°F, often windy downtown. It's dark by about 4:30 PM, which is why lights and the tree are planned for late afternoon. Waterproof shoes beat cute ones; you'll walk 6–10 miles a day.</p></div>
       <div class="tip"><h3>Subway</h3>
@@ -287,11 +392,13 @@ footer{font-size:.8rem;color:var(--muted)}
         <ul><li>Most Broadway shows are dark on Mondays, so the show is on Tuesday.</li><li>The 9/11 Museum normally closes Tuesdays, so downtown is Wednesday. The outdoor Memorial pools are free and open daily.</li><li>The Rockefeller tree is lit from Dec 2 and stays up into January.</li></ul></div>
     </div>
   </section>
-
   </div>
-  <footer>Hours and schedules checked in early November 2026. Confirm anything paid on the official site before booking. Restaurant picks can close or change hours; check before you go.</footer>
+
+  <footer>Hours and prices checked in early November 2026. Confirm anything paid on the official site before booking. Restaurants can close or change hours; check before you go. Map data © OpenStreetMap contributors, © CARTO.</footer>
 </div>
 </main>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
