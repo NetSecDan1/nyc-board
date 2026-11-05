@@ -229,6 +229,7 @@ section{scroll-margin-top:64px}
 @keyframes march{to{stroke-dashoffset:-24}}
 @media (prefers-reduced-motion:reduce){.route-walk{animation:none}.pin{transition:none}}
 .leaflet-container{font-family:var(--body)}
+@media (prefers-color-scheme:dark){#map .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.88) saturate(.6)}}
 .leaflet-tooltip{font-size:.8rem;font-weight:700;border-radius:6px}
 .dayhead .dayacts{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:4px}
 .stops::before{left:70px}
@@ -395,11 +396,11 @@ section{scroll-margin-top:64px}
   </section>
   </div>
 
-  <footer>Hours and prices checked in early November 2026. Confirm anything paid on the official site before booking. Restaurants can close or change hours; check before you go. Map data © OpenStreetMap contributors, © CARTO.</footer>
+  <footer>Hours and prices checked in early November 2026. Confirm anything paid on the official site before booking. Restaurants can close or change hours; check before you go. Map data © OpenStreetMap contributors.</footer>
 </div>
 </main>
 <div id="toast" role="status" aria-live="polite" hidden></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="app.js?v=a64dcb00"></script>
+<script src="app.js?v=65692193"></script>
 </body>
 </html>

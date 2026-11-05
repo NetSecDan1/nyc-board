@@ -113,14 +113,12 @@ const MAP={m:null,tiles:null,layer:null,markers:[],dayId:null,
     if(this.m||!this.ok())return;
     this.m=L.map("map",{zoomControl:true,scrollWheelZoom:false,tap:true,attributionControl:true}).setView(HOTEL,13);
     this.setTiles();
-    if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",()=>this.setTiles());
     this.layer=L.layerGroup().addTo(this.m);
   },
   setTiles(){
-    const dark=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches;
-    if(this.tiles)this.tiles.remove();
-    this.tiles=L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/"+(dark?"dark_all":"voyager")+"/{z}/{x}/{y}{r}.png",
-      {maxZoom:19,subdomains:"abcd",attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'}).addTo(this.m);
+    if(this.tiles)return;
+    this.tiles=L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(this.m);
   },
   resize(){if(this.m)this.m.invalidateSize()},
   draw(day,refit){
