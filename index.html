@@ -210,8 +210,8 @@ section{scroll-margin-top:64px}
 .tab[aria-selected="true"]{border-color:var(--daycol);box-shadow:0 0 0 1.5px var(--daycol)}
 .planwrap{display:grid;gap:14px}
 #plan{--daycol:var(--mon)}
-.mapbox{position:sticky;top:52px;z-index:5;isolation:isolate;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--surface);box-shadow:0 6px 18px -12px #0006}
-#map{height:min(30vh,300px);min-height:200px;width:100%;background:var(--line)}
+.mapbox{position:relative;z-index:5;isolation:isolate;scroll-margin-top:60px;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--surface);box-shadow:0 6px 18px -12px #0006}
+#map{height:min(42vh,360px);min-height:240px;width:100%;background:var(--line)}
 .legend{display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:.74rem;color:var(--muted);padding:6px 10px;border-top:1px solid var(--line);background:var(--surface)}
 .legend i{display:inline-block;width:22px;height:0;border-top:3px dashed var(--daycol);vertical-align:middle;margin-right:4px}
 .legend i.t{border-top:3px dotted var(--daycol);opacity:.6}
@@ -253,7 +253,7 @@ section{scroll-margin-top:64px}
 @media (min-width:900px){
   .wrap{max-width:1120px}
   .planwrap{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:start}
-  .mapbox{order:2;top:64px}
+  .mapbox{order:2;position:sticky;top:64px}
   #map{height:calc(100vh - 150px);max-height:680px}
   #day{order:1}
 }
@@ -400,6 +400,6 @@ section{scroll-margin-top:64px}
 </main>
 <div id="toast" role="status" aria-live="polite" hidden></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="app.js?v=0636ad14"></script>
+<script src="app.js?v=a64dcb00"></script>
 </body>
 </html>

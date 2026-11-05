@@ -174,6 +174,7 @@ function setActive(idx,fromMap){
   S.active=idx;
   document.querySelectorAll(".stop.on").forEach(x=>x.classList.remove("on"));
   const li=document.querySelector('.stop[data-i="'+idx+'"]');if(li){li.classList.add("on");if(fromMap)li.scrollIntoView({behavior:reduced()?"auto":"smooth",block:"nearest"})}
+  if(!fromMap&&window.innerWidth<900){const mb=document.querySelector(".mapbox");const r=mb.getBoundingClientRect();if(r.top<56||r.bottom>window.innerHeight)mb.scrollIntoView({behavior:reduced()?"auto":"smooth",block:"start"})}
   MAP.focus(idx,!fromMap);
 }
 function routeLink(day){
@@ -283,7 +284,7 @@ function renderDay(refit){
   $("plan").style.setProperty("--daycol",COLORS[d.id]);box.setAttribute("aria-labelledby","tab-"+d.id);box.replaceChildren();
   const rl=routeLink(d);
   box.append(el("div",{class:"dayhead"},el("div",{class:"eyebrow",text:d.name}),el("h3",{text:d.title}),
-    el("div",{class:"dayacts"},el("span",{class:"who",text:"Tap a stop to see it on the map"}),rl?el("a",{class:"maplink",href:rl,target:"_blank",rel:"noopener",text:"Open today's route in Google Maps"}):null)));
+    el("div",{class:"dayacts"},el("span",{class:"who",text:"Tap any stop to see it on the map above"}),rl?el("a",{class:"maplink",href:rl,target:"_blank",rel:"noopener",text:"Open today's route in Google Maps"}):null)));
   if(d.note)box.append(el("div",{class:"note",text:d.note}));
   const ol=el("ol",{class:"stops"});
   numbered(d).forEach(({s,n},idx)=>{
