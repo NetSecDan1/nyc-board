@@ -132,7 +132,7 @@ const MAP={m:null,tiles:null,layer:null,markers:[],dayId:null,
       if(s.tr&&!s.ll){transit=true;return}
       if(!s.ll)return;
       if(prev){
-        const seg=[prev,s.ll];const isT=transit;
+        const seg=[prev,s.ll];const isT=transit||!!s.arr;
         L.polyline(seg,isT?{color:col,weight:3,opacity:.55,dashArray:"1 9",lineCap:"round",className:"route-transit"}:{color:col,weight:4,opacity:.95,dashArray:"2 10",lineCap:"round",className:"route-walk"}).addTo(this.layer);
       }
       transit=!!s.tr;prev=Object.assign([s.ll[0],s.ll[1]],{tr:!!s.tr});
@@ -144,6 +144,11 @@ const MAP={m:null,tiles:null,layer:null,markers:[],dayId:null,
       mk.bindTooltip((hotel?"Hotel · ":n+". ")+s.t+" "+s.h.replace(/^Bite \d · /,""),{direction:"top",offset:[0,-14]});
       mk.on("click",()=>setActive(idx,true));
       this.markers[idx]=mk;
+      (s.split||[]).forEach((g,gi)=>{if(!gi||!g.ll)return;pts.push(g.ll);
+        const ic=L.divIcon({className:"",iconSize:[30,28],iconAnchor:[15,14],html:'<div class="pin pin-b" style="--c:'+col+'">'+n+'b</div>'});
+        L.polyline([s.ll,g.ll],{color:col,weight:2,opacity:.6,dashArray:"3 6"}).addTo(this.layer);
+        L.marker(g.ll,{icon:ic,zIndexOffset:idx,title:g.h}).addTo(this.layer).bindTooltip(n+"b. "+g.who+" · "+g.h,{direction:"top",offset:[0,-14]}).on("click",()=>setActive(idx,true));
+      });
     });
     allIdeas().filter(i=>i.d===day.id&&i.ll&&isPicked(i.id)).forEach(i=>{
       const icon=L.divIcon({className:"",iconSize:[26,26],iconAnchor:[13,13],html:'<div class="pin pin-pick" style="--c:'+col+'">★</div>'});
@@ -291,6 +296,7 @@ function renderDay(refit){
   numbered(d).forEach(({s,n},idx)=>{
     const body=el("div",{class:"sbody"},el("h4",{},s.crawl?el("span",{class:"crawl",text:"Crawl"}):null,s.crawl?" ":null,s.h),el("p",{text:s.p}));
     if(s.tags||s.q){const tg=el("div",{class:"tags"});(s.tags||[]).forEach(x=>tg.append(el("span",{class:"tag"+(x==="Book ahead"?" book":""),text:x})));if(s.q)tg.append(el("a",{class:"maplink",href:mapUrl(s.q),target:"_blank",rel:"noopener",onclick:e=>e.stopPropagation(),text:"Directions"}));body.append(tg)}
+    if(s.split&&s.split.length){const sp=el("div",{class:"split"});s.split.forEach((g,gi)=>sp.append(el("div",{class:"splitcol"},el("div",{class:"splitwho"},el("span",{class:"splitbadge",text:n!=null?String(n)+(gi?"b":"a"):""}),g.who),el("b",{text:g.h}),el("p",{text:g.p}),g.q?el("a",{class:"maplink",href:mapUrl(g.q),target:"_blank",rel:"noopener",onclick:e=>e.stopPropagation(),text:"Directions"}):null)));body.append(sp)}
     if(s.alts&&s.alts.length)body.append(altsBox(s.alts,open=>{if(open){setActive(idx,false);MAP.showAlts(s,s.alts)}else MAP.showAlts(null)}));
     const li=el("li",{class:"stop"+(s.tr?" transit":"")+(S.active===idx?" on":""),"data-i":String(idx),tabindex:s.ll?"0":null,role:s.ll?"button":null,"aria-label":s.ll?s.t+" "+s.h+", show on map":null},
       el("div",{class:"time",text:s.t}),el("div",{class:"node"+(n==="H"?" h":""),"aria-hidden":"true",text:n==null?"":String(n)}),body);

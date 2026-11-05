@@ -259,6 +259,13 @@ section{scroll-margin-top:64px}
   #day{order:1}
 }
 @media (max-width:420px){.stops::before{left:66px}}
+/* split-up stops */
+.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:8px;margin-top:6px}
+.splitcol{border:1px solid var(--line);border-left:4px solid var(--daycol);border-radius:8px;padding:8px 10px;background:var(--surface);display:grid;gap:2px;min-width:0}
+.splitcol p{font-size:.86rem}
+.splitwho{display:flex;gap:6px;align-items:center;font-family:var(--display);font-weight:800;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.splitbadge{background:var(--daycol);color:#fff;border-radius:4px;padding:0 5px;font-size:.68rem}
+.pin-b{width:30px;border-radius:14px;background:#fff;color:var(--c);border:2.5px solid var(--c);font-size:11px}
 /* vote tags */
 .tagfilter{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .tagfilter::-webkit-scrollbar{display:none}
@@ -417,6 +424,6 @@ section{scroll-margin-top:64px}
 </main>
 <div id="toast" role="status" aria-live="polite" hidden></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="app.js?v=6919b585"></script>
+<script src="app.js?v=de2e0220"></script>
 </body>
 </html>
