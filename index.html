@@ -259,6 +259,21 @@ section{scroll-margin-top:64px}
   #day{order:1}
 }
 @media (max-width:420px){.stops::before{left:66px}}
+/* vote tags */
+.tagfilter{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.tagfilter::-webkit-scrollbar{display:none}
+.tagfilter button{flex:none;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 12px;font-size:.84rem;font-weight:700;min-height:36px}
+.tagfilter button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.vt{font-size:.7rem;font-family:var(--display);font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:1px 8px;border:1.5px solid currentColor}
+.t-must{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.t-local{color:var(--yes)}
+.t-trap{color:var(--warn);border-style:dashed}
+.t-wait{color:var(--muted)}
+.t-cheap{color:var(--yes);border-style:dotted}
+.t-pricey{color:var(--mon)}
+.t-sneak{color:var(--thu)}
+.t-near{color:var(--muted);border-color:var(--line);text-transform:none;letter-spacing:0;font-family:var(--body);font-weight:700}
+.t-near.close{color:var(--accent);border-color:var(--accent)}
 /* toast */
 #toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2000;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:.9rem;font-weight:700;box-shadow:0 6px 20px #0005;max-width:calc(100vw - 32px)}
 </style>
@@ -344,7 +359,7 @@ section{scroll-margin-top:64px}
   <section id="vote" aria-labelledby="voteH">
     <div class="eyebrow">Step 3 · Family vote</div>
     <h2 id="voteH">Extras to add</h2>
-    <p class="lede">Tap <b>I'm in</b> or <b>Skip</b>. Anything most of the group wants shows up on that day's plan and map. Open <b>Local picks</b> for cheaper or less touristy swaps.</p>
+    <p class="lede">Tap <b>I'm in</b> or <b>Skip</b>. Anything most of the group wants shows up on that day's plan and map. Tags are honest: tourist traps are labeled, and walking times are from the hotel. Open <b>Local picks</b> for cheaper or less touristy swaps.</p>
     <div class="toolbar">
       <div class="seg" id="sortSeg" role="group" aria-label="Sort">
         <button type="button" data-sort="top" aria-pressed="true">Most wanted</button>
@@ -352,6 +367,7 @@ section{scroll-margin-top:64px}
         <button type="button" data-sort="mine" aria-pressed="false">Not voted yet</button>
       </div>
     </div>
+    <div class="tagfilter" id="tagFilter" role="group" aria-label="Filter by tag"></div>
     <div class="ideas" id="ideas"></div>
     <form class="add" id="addForm">
       <h3 style="font-size:1.1rem">Suggest an extra for the vote</h3>
@@ -401,6 +417,6 @@ section{scroll-margin-top:64px}
 </main>
 <div id="toast" role="status" aria-live="polite" hidden></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="app.js?v=65692193"></script>
+<script src="app.js?v=6919b585"></script>
 </body>
 </html>

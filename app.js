@@ -11,13 +11,16 @@ let DAYS=[],IDEAS=[],BOOKINGS=[],DAYMAP={};
 const HEX={mon:"#ee352e",tue:"#00933c",wed:"#ff6319",thu:"#b933ad"};
 const COLORS={mon:"var(--mon)",tue:"var(--tue)",wed:"var(--wed)",thu:"var(--thu)",any:"var(--muted)"};
 const KINDS={do:"Do",see:"See",eat:"Eat",shop:"Shop"};
+const TAGS={must:["Must-do","t-must"],local:["Local favorite","t-local"],trap:["Tourist trap","t-trap"],wait:["Long waits","t-wait"],cheap:["Cheap eat","t-cheap"],pricey:["Pricey","t-pricey"],sneak:["Easy sneak-in","t-sneak"]};
+const FILTERS=[["all","All"],["near","Near hotel"],["must","Must-do"],["local","Local favorite"],["sneak","Easy sneak-in"],["cheap","Cheap eats"],["trap","Tourist traps"]];
+function walkMin(ll){if(!ll)return null;const R=6371e3,toR=x=>x*Math.PI/180;const dLat=toR(ll[0]-HOTEL[0]),dLon=toR(ll[1]-HOTEL[1]);const a=Math.sin(dLat/2)**2+Math.cos(toR(HOTEL[0]))*Math.cos(toR(ll[0]))*Math.sin(dLon/2)**2;const m=2*R*Math.asin(Math.sqrt(a))*1.3;return Math.max(1,Math.round(m/80))}
 const STATUS={planned:"In the plan",maybe:"Maybe",nofit:"Won't fit"};
 const SUGGEST=[
  ["See the Rockefeller tree lit up","see"],["Eat a real NY bagel","eat"],["Grab a NY pizza slice","eat"],["See a Broadway show","do"],
  ["Go ice skating","do"],["See the Statue of Liberty","see"],["Go up the Empire State Building","see"],["Shop Fifth Avenue","shop"],
  ["Knockoff bags on Canal St","shop"],["Dim sum in Chinatown","eat"],["Hot chocolate somewhere cozy","eat"],["Horse carriage in Central Park","do"]];
 
-const S={day:"mon",sort:"top",dumpF:"top",kind:"do",me:null,code:null,organizer:null,
+const S={tagF:"all",day:"mon",sort:"top",dumpF:"top",kind:"do",me:null,code:null,organizer:null,
   travelers:{},votes:[],ideas:[],dumps:[],bookings:{},loaded:false,err:null,pending:{},active:null,lastSig:"",joinKey:null};
 const $=id=>document.getElementById(id);
 const el=(tag,attrs,...kids)=>{const e=document.createElement(tag);if(attrs)for(const[k,v]of Object.entries(attrs)){if(v==null||v===false)continue;if(k==="class")e.className=v;else if(k==="text")e.textContent=v;else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v===true?"":v)}for(const k of kids)if(k!=null)e.append(k);return e};
@@ -309,10 +312,15 @@ function renderIdeas(){
   if(S.sort==="top")list.sort((a,b)=>(b.tl.yes-b.tl.no)-(a.tl.yes-a.tl.no)||b.tl.yes-a.tl.yes);
   else if(S.sort==="day")list.sort((a,b)=>order.indexOf(a.i.d)-order.indexOf(b.i.d));
   else list=list.filter(x=>!S.me||!pickOf(S.me.id,x.i.id));
-  if(!list.length){box.append(el("div",{class:"empty",text:"You've voted on everything. Nice."}));return}
+  if(S.tagF==="near")list=list.filter(x=>{const w=walkMin(x.i.ll);return w!=null&&w<=12}).sort((a,b)=>walkMin(a.i.ll)-walkMin(b.i.ll));
+  else if(S.tagF!=="all")list=list.filter(x=>(x.i.tags||[]).includes(S.tagF));
+  renderTagFilter();
+  if(!list.length){box.append(el("div",{class:"empty",text:S.tagF!=="all"?"Nothing here with that filter.":"You've voted on everything. Nice."}));return}
   for(const{i,tl}of list){
     const day=DAYMAP[i.d];const mine=S.me?pickOf(S.me.id,i.id):undefined;const total=tl.yes+tl.no;
     const meta=el("div",{class:"tags"},el("span",{class:"tag",text:day?day.name.split(" ")[0]:"Any day"}),el("span",{class:"tag",text:i.c||"Free"}));
+    const wm=walkMin(i.ll);if(wm!=null&&wm<=25)meta.append(el("span",{class:"vt t-near"+(wm<=12?" close":""),text:wm+" min walk from hotel"}));
+    (i.tags||[]).forEach(t=>{if(TAGS[t])meta.append(el("span",{class:"vt "+TAGS[t][1],text:TAGS[t][0]}))});
     if(isPicked(i.id))meta.append(el("span",{class:"tag",style:"border-color:var(--yes);color:var(--yes)",text:"Voted in"}));
     const body=el("div",{class:"ibody"},el("h4",{text:i.t}),i.n?el("p",{text:i.n}):null,meta);
     if(i.alts&&i.alts.length)body.append(altsBox(i.alts));
@@ -325,6 +333,10 @@ function renderIdeas(){
         el("div",{class:"tally"},el("span",{class:"bar","aria-hidden":"true"},el("i",{style:"width:"+(total?Math.round(tl.yes/total*100):0)+"%"})),el("span",{text:tl.yes+" in · "+tl.no+" skip"}))),
       yesNames.length?el("div",{class:"who",style:"grid-column:1/-1",text:"In: "+yesNames.join(", ")}):null));
   }
+}
+function renderTagFilter(){
+  const box=$("tagFilter");if(!box)return;box.replaceChildren();
+  FILTERS.forEach(([v,l])=>box.append(el("button",{type:"button","aria-pressed":String(S.tagF===v),onclick:()=>{S.tagF=v;renderIdeas()},text:l})));
 }
 function renderChecks(){
   const ul=$("checks");ul.replaceChildren();let done=0;
